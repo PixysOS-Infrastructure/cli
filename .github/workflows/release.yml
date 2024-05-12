@@ -8,6 +8,14 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [x86_64, aarch64]
+        include:
+          - platform: x86_64
+            image: i386/python:3.7-slim
+          - platform: aarch64
+            image: arm64v8/python:3.7-slim
     steps:
       - name: Checkout scripts repository
         uses: actions/checkout@v4
@@ -17,8 +25,14 @@ jobs:
           sparse-checkout: 'cli/temp-cli'
           ref: 'master'
 
-      - name: Set up QEMU for cross-compiling to ARM64
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: all
+
+      - name: Test
+        run: 'echo "${{ matrix.platform }}" ${{ matrix.image }}"'
         
       # - name: Set up Docker BuildX
       #   id: buildx
