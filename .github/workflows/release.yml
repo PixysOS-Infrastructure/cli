@@ -31,8 +31,15 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: all
 
-      - name: Test
-        run: 'echo "${{ matrix.platform }} ${{ matrix.image }}"'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        
+      - name: Build binary on emulated aarch64
+        run: |
+          docker run --rm --platform ${{ matrix.platform }} --volume "${PWD}:/repo" ${{ matrix.image }} /bin/sh -c " \
+            arch
+          "
+        
         
       # - name: Set up Docker BuildX
       #   id: buildx
