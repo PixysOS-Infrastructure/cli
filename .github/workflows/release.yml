@@ -5,18 +5,41 @@ on:
     branches:
       - main
 
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         platform:
+#           - linux/amd64
+#           - linux/386
+#           - linux/arm/v6
+#           - linux/arm/v7
+#           - linux/arm64
+
 jobs:
-  build:
+  main:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        platform:
-          - linux/amd64
-          - linux/386
-          - linux/arm/v6
-          - linux/arm/v7
-          - linux/arm64
-
-
+        image:
+          - tonistiigi/binfmt:latest
+          - tonistiigi/binfmt:master
+        platforms:
+          - all
+          - arm64,riscv64,arm
     steps:
-      - run: echo "Hello $(arch)"
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Set up QEMU
+        id: qemu
+        uses: ./
+        with:
+          image: ${{ matrix.image }}
+          platforms: ${{ matrix.platforms }}
+      -
+        name: Available platforms
+        run: echo ${{ steps.qemu.outputs.platforms }}
