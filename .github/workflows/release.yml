@@ -14,5 +14,17 @@ jobs:
         with:
           repository: PixysOS-Infrastructure/scripts
           token: ${{ secrets.GH_TOKEN }}
+          sparse-checkout: 'cli/temp-cli'
           ref: 'master'
+
+      - name: Set up QEMU for cross-compiling to ARM64
+        uses: docker/setup-qemu-action@v3
+        
+      # - name: Set up Docker BuildX
+      #   id: buildx
+      #   uses: docker/setup-buildx-action@v2
+
+      # - name: Install PIP Dependencies
+      #   working-directory: ${{ github.workspace }}/cli/temp-cli
+      #   run: 'pip3 install --no-cache-dir -r requirements.txt'
           
