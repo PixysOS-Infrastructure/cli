@@ -22,7 +22,6 @@ jobs:
         with:
           repository: PixysOS-Infrastructure/scripts
           token: ${{ secrets.GH_TOKEN }}
-          sparse-checkout: 'cli/temp-cli'
           path: '${{ github.workspace }}/ws'
           ref: 'master'
 
@@ -37,7 +36,7 @@ jobs:
         
       - name: Build binary on emulated aarch64
         run: |
-          docker run --rm --platform ${{ matrix.platform }} --volume "${{ github.workspace }}/ws/cli:/ws" ${{ matrix.image }} /bin/sh -c " \
+          docker run --rm --platform ${{ matrix.platform }} --volume "${{ github.workspace }}/ws/cli/temp-cli:/ws" ${{ matrix.image }} /bin/sh -c " \
             arch
             cd ws
             ls
