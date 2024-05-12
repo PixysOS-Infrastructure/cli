@@ -1,0 +1,85 @@
+name: Build | Upload | Notify
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+
+jobs:
+  build_upload:
+    name: Build & Upload
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [amd64, arm64]
+        include:
+          - platform: amd64
+            image: amd64/python:3.11.3-buster
+          - platform: arm64
+            image: arm64v8/python:3.11.3-buster
+
+    steps:
+      - name: Checkout scripts repository
+        uses: actions/checkout@v4
+        with:
+          path: '${{ github.workspace }}/version-info'
+
+      - name: Set Version
+        run: echo "VERSION=$(cat ${{ github.workspace }}/version-info/VERSION.txt)" >> "$GITHUB_ENV"
+      
+      - name: Checkout scripts repository
+        uses: actions/checkout@v4
+        with:
+          repository: PixysOS-Infrastructure/scripts
+          token: ${{ secrets.GH_TOKEN }}
+          path: '${{ github.workspace }}/ws'
+          ref: 'master'
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: 'linux/${{ matrix.platform }}'
+          
+      - name: Build
+        run: |
+          docker run --rm --platform ${{ matrix.platform }} --volume "${{ github.workspace }}/ws/cli/temp-cli:/ws" ${{ matrix.image }} /bin/sh -c " \
+            cd ws
+            pip3 install --no-cache-dir -r requirements.txt
+            pyinstaller -n pixys.cli.${{ env.VERSION }}.${{ github.sha }}.${{ matrix.platform }} --onefile standalone_post_build.py
+          "
+      
+      - name: Upload
+        uses: ncipollo/release-action@v1
+        with:
+          makeLatest: true
+          allowUpdates: true
+          token: ${{ secrets.GH_TOKEN }}
+          tag: 'release/${{ env.VERSION }}'
+          artifacts: '${{ github.workspace }}/ws/cli/temp-cli/dist/pixys.cli.${{ env.VERSION }}.${{ github.sha }}.*'
+          body: 'Release for version: ${{ env.VERSION }}'
+
+  notify:
+    name: Notify Telegeram
+    runs-on: ubuntu-latest
+    needs: build_upload
+    steps:
+      - name: Checkout scripts repository
+        uses: actions/checkout@v4
+        with:
+          path: '${{ github.workspace }}/version-info'
+
+      - name: Set Version
+        run: echo "VERSION=$(cat ${{ github.workspace }}/version-info/VERSION.txt)" >> "$GITHUB_ENV"
+
+      - name: Notify on CLI release.
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHANNEL }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: 'html'
+          message: |
+            🔄 CLI Tool New Version Released:
+            <code>curl https://raw.githubusercontent.com/PixysOS-Infrastructure/cli/${{ github.sha }}/.github/scripts/install-cli.sh | bash -s -- ${{ env.VERSION }} ${{ github.sha }}</code>
