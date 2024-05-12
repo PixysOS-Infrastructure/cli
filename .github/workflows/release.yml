@@ -16,9 +16,9 @@ jobs:
         platform: [x86_64, aarch64]
         include:
           - platform: x86_64
-            image: i386/python:3.7-slim
+            image: i386/python:3.11.3-slim
           - platform: aarch64
-            image: arm64v8/python:3.7-slim
+            image: arm64v8/python:3.11.3-slim
     steps:
       - name: Checkout scripts repository
         uses: actions/checkout@v4
