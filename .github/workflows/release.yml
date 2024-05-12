@@ -40,7 +40,7 @@ jobs:
             cd ws
             pip3 install --no-cache-dir -r requirements.txt
             pip3 install pyinstaller
-            pyinstaller -n pixys-cli.${{ env.VERSION }}.${{ matrix.platform }}
+            pyinstaller -n pixys-cli.${{ env.VERSION }}.${{ matrix.platform }} --onefile standalone_post_build.py
             ls 
             ls dist
           "
