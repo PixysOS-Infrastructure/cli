@@ -32,7 +32,7 @@ jobs:
           platforms: all
 
       - name: Test
-        run: 'echo "${{ matrix.platform }}" ${{ matrix.image }}"'
+        run: 'echo "${{ matrix.platform }} ${{ matrix.image }}"'
         
       # - name: Set up Docker BuildX
       #   id: buildx
