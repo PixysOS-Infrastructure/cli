@@ -1,5 +1,8 @@
 name: Build and Upload Artifact
 
+env:
+  VERSION: 0.1
+
 on:
   push:
     branches:
@@ -36,6 +39,10 @@ jobs:
           docker run --rm --platform ${{ matrix.platform }} --volume "${{ github.workspace }}/ws/cli/temp-cli:/ws" ${{ matrix.image }} /bin/sh -c " \
             cd ws
             pip3 install --no-cache-dir -r requirements.txt
+            pip3 install pyinstaller
+            pyinstaller -n pixys-cli.${{ env.VERSION }}.${{ matrix.platform }}
+            ls 
+            ls dist
           "
         
         
