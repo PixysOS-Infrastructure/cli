@@ -37,7 +37,7 @@ jobs:
         
       - name: Build binary on emulated aarch64
         run: |
-          docker run --rm --platform ${{ matrix.platform }} --volume "${{ github.workspace }}/ws:/ws" ${{ matrix.image }} /bin/sh -c " \
+          docker run --rm --platform ${{ matrix.platform }} --volume "${{ github.workspace }}/ws/cli:/ws" ${{ matrix.image }} /bin/sh -c " \
             arch
             cd ws
             ls
