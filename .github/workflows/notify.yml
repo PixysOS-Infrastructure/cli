@@ -1,0 +1,27 @@
+name: Notify Telegram on New Release
+
+on:
+  release:
+    types: [created, edited]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout scripts repository
+        uses: actions/checkout@v4
+        with:
+          path: '${{ github.workspace }}/version-info'
+
+      - name: Set Version
+        run: echo "VERSION=$(cat ${{ github.workspace }}/version-info/VERSION.txt)" >> "$GITHUB_ENV"
+
+      - name: Notify on CLI release.
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHANNEL }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            🔄 CLI Tool New Version Released:
+            `curl https://raw.githubusercontent.com/PixysOS-Infrastructure/cli/${{ github.sha }}/.github/scripts/install-cli.sh | bash -s -- ${{ env.VERSION }} ${{ github.sha }}`
