@@ -38,6 +38,7 @@ jobs:
         run: |
           docker run --rm --platform ${{ matrix.platform }} --volume "${PWD}:/repo" ${{ matrix.image }} /bin/sh -c " \
             arch
+            pwd
           "
         
         
