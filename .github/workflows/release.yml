@@ -15,4 +15,4 @@ jobs:
 
 
     steps:
-      - run: echo "Hello ${arch}"
+      - run: echo "Hello $(arch)"
