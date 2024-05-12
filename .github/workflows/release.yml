@@ -40,6 +40,7 @@ jobs:
           docker run --rm --platform ${{ matrix.platform }} --volume "${{ github.workspace }}/ws/cli/temp-cli:/ws" ${{ matrix.image }} /bin/sh -c " \
             cd ws
             pip3 install --no-cache-dir -r requirements.txt
+            pyinstaller -n pixys-cli.${{ env.VERSION }}.${{ matrix.platform }} --onefile standalone_post_build.py
             ls 
             ls dist
           "
