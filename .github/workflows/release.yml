@@ -39,11 +39,18 @@ jobs:
         run: |
           docker run --rm --platform ${{ matrix.platform }} --volume "${{ github.workspace }}/ws/cli/temp-cli:/ws" ${{ matrix.image }} /bin/sh -c " \
             cd ws
+            echo "Build CLI tool on arch $(arch)"
             pip3 install --no-cache-dir -r requirements.txt
-            pyinstaller -n pixys-cli.${{ env.VERSION }}.${{ matrix.platform }} --onefile standalone_post_build.py
+            pyinstaller -n pixys.cli.${{ env.VERSION }}.${{ matrix.platform }} --onefile standalone_post_build.py
             ls 
             ls dist
           "
+      - name: Upload Build
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          tag: 'release/${{ env.VERSION }}'
+          artifacts: '${{ github.workspace }}/ws/cli/temp-cli/dist/pixys.cli.*'
         
         
       # - name: Set up Docker BuildX
