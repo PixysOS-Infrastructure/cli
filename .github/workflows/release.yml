@@ -46,7 +46,7 @@ jobs:
             ls dist
           "
       - name: Upload Build
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GH_TOKEN }}
           tag: 'release/${{ env.VERSION }}'
